@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 10:35:00 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 10:53:50 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/09 15:11:17 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,22 @@
 
 void	print_content(t_dir_info *dir_info, char *path, unsigned char options)
 {
-	int		i;
-	char	**content_lits;
+	char	**content_list;
 
 	if (LIST_OPT(options))
 	{
-		content_lits = get_content_list(dir_info, path, options);
-		if (!content_lits)
+		content_list = get_content_list(dir_info, path, options);
+		if (!content_list)
 			return ;
-		i = -1;
-		while (content_lits[++i])
-			ft_printf("%s\n", content_lits[i]);
+		for (int i = 0; content_list[i]; i++) {
+			ft_printf("%s\n", content_list[i]);
+			free(content_list[i]);
+		}
+		free(content_list);
 	}
 	else
 	{
-		i = -1;
-		while (++i < dir_info->size)
+		for (int i = 0; i < dir_info->size; i++)
 		{
 			if (dir_info->content[i]->d_name[0] != '.' || ALL_OPT(options))
 				ft_printf("%s\n", dir_info->content[i]->d_name);

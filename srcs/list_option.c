@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 13:49:05 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 12:13:44 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/09 15:12:24 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,46 +43,6 @@ static char	get_type(mode_t mode)
 		return '-';
 }
 
-// static void	print_permissions(struct stat *st)
-// {
-// 	if (st->st_mode & S_IRUSR)
-// 		ft_printf("r");
-// 	else
-// 		ft_printf("-");
-// 	if (st->st_mode & S_IWUSR)
-// 		ft_printf("w");
-// 	else
-// 		ft_printf("-");
-// 	if (st->st_mode & S_IXUSR)
-// 		ft_printf("x");
-// 	else
-// 		ft_printf("-");
-// 	if (st->st_mode & S_IRGRP)
-// 		ft_printf("r");
-// 	else
-// 		ft_printf("-");
-// 	if (st->st_mode & S_IWGRP)
-// 		ft_printf("w");
-// 	else
-// 		ft_printf("-");
-// 	if (st->st_mode & S_IXGRP)
-// 		ft_printf("x");
-// 	else
-// 		ft_printf("-");
-// 	if (st->st_mode & S_IROTH)
-// 		ft_printf("r");
-// 	else
-// 		ft_printf("-");
-// 	if (st->st_mode & S_IWOTH)
-// 		ft_printf("w");
-// 	else
-// 		ft_printf("-");
-// 	if (st->st_mode & S_IXOTH)
-// 		ft_printf("x");
-// 	else
-// 		ft_printf("-");
-// }
-
 // static void	print_size_and_time(off_t size, time_t time)
 // {
 // 	char	*str;
@@ -108,21 +68,16 @@ static struct stat	**malloc_stat_list(t_dir_info *dir_info, unsigned char option
 {
 	struct stat	**st;
 	int			count;
-	int			i;
 
 	count = 0;
-	i = -1;
-	while (++i < dir_info->size)
-	{
+	for (int i = 0; i < dir_info->size; i++) {
 		if (dir_info->content[i]->d_name[0] != '.' || ALL_OPT(options))
 			count++;
 	}
 	st = malloc(sizeof(struct stat *) * (count + 1));
-	i = -1;
-	while (++i < count)
-	{
+	int i;
+	for (i = 0; i < count; i++)
 		st[i] = malloc(sizeof(struct stat));
-	}
 	st[i] = NULL;
 	(*size) = count;
 	return (st);
@@ -176,20 +131,99 @@ static char	*get_same_len_join(char *s1, char *s2, int size, char c)
 static void	set_nlink(char **content_list, struct stat **st, int size)
 {
 	char	*numbers[size];
-	int	max = 0;
+	int		max = 0;
 
-	for (int i = 0; st[i]; i++)
-	{
+	for (int i = 0; st[i]; i++) {
 		char	*n = ft_itoa((int)(st[i]->st_nlink));
 		int		len = ft_strlen(n);
 		numbers[i] = n;
 		max = len > max ? len : max;
 	}
-	for (int i = 0; st[i]; i++)
-	{
+	for (int i = 0; st[i]; i++) {
 		char	*tmp = get_same_len_join(content_list[i], numbers[i], max + ft_strlen(content_list[i]), ' ');
 		free(content_list[i]);
 		free(numbers[i]);
+		content_list[i] = tmp;
+	}
+}
+
+static void	set_user_name(char **content_list, struct stat **st, int size)
+{
+	char	*names[size];
+	int		max = 0;
+
+	for (int i = 0; i < size; i++) {
+		names[i] = getpwuid(st[i]->st_uid)->pw_name;
+		int	len = ft_strlen(names[i]);
+		max = len > max ? len : max;
+	}
+	for (int i = 0; i < size; i++) {
+		char	*tmp = get_same_len_join(content_list[i], names[i], max + ft_strlen(content_list[i]) + 1, ' ');
+		free(content_list[i]);
+		content_list[i] = tmp;
+	}
+}
+
+static void	set_group_name(char **content_list, struct stat **st, int size)
+{
+	char	*names[size];
+	int		max = 0;
+
+	for (int i = 0; i < size; i++) {
+		names[i] = getgrgid(st[i]->st_gid)->gr_name;
+		int	len = ft_strlen(names[i]);
+		max = len > max ? len : max;
+	}
+	for (int i = 0; i < size; i++) {
+		char	*tmp = get_same_len_join(content_list[i], names[i], max + ft_strlen(content_list[i]) + 1, ' ');
+		free(content_list[i]);
+		content_list[i] = tmp;
+	}
+}
+
+static void	set_size(char **content_list, struct stat **st, int size)
+{
+	char	*sizes[size];
+	int		max = 0;
+
+	for (int i = 0; st[i]; i++) {
+		char	*n = ft_itoa((int)(st[i]->st_size));
+		int		len = ft_strlen(n);
+		sizes[i] = n;
+		max = len > max ? len : max;
+	}
+	for (int i = 0; st[i]; i++) {
+		char	*tmp = get_same_len_join(content_list[i], sizes[i], max + ft_strlen(content_list[i]) + 1, ' ');
+		free(content_list[i]);
+		free(sizes[i]);
+		content_list[i] = tmp;
+	}
+}
+
+static void	set_time(char **content_list, struct stat **st, int size)
+{
+	char	*times[size];
+	int		max = 0;
+
+	for (int i = 0; st[i]; i++) {
+		char	*time = ft_substr(ctime(&st[i]->st_mtime), 4, 12);
+		int		len = ft_strlen(time);
+		times[i] = time;
+		max = len > max ? len : max;
+	}
+	for (int i = 0; st[i]; i++) {
+		char	*tmp = get_same_len_join(content_list[i], times[i], max + ft_strlen(content_list[i]) + 1, ' ');
+		free(content_list[i]);
+		free(times[i]);
+		content_list[i] = tmp;
+	}
+}
+
+static void	set_name(char **content_list, char *names[], int size)
+{
+	for (int i = 0; i < size; i++) {
+		char	*tmp = get_same_len_join(content_list[i], names[i], ft_strlen(content_list[i]) + ft_strlen(names[i]) + 1, ' ');
+		free(content_list[i]);
 		content_list[i] = tmp;
 	}
 }
@@ -199,7 +233,9 @@ char	**get_content_list(t_dir_info *dir_info, char *path, unsigned char options)
 	int			size;
 	struct stat	**st = malloc_stat_list(dir_info, options, &size);
 	char		**content_list = malloc_content_list(dir_info, options);
+	char		*names[size];
 
+	content_list[size] = NULL;
 	int	j = 0;
 	for  (int i = 0; i < dir_info->size; i++)
 	{
@@ -207,20 +243,21 @@ char	**get_content_list(t_dir_info *dir_info, char *path, unsigned char options)
 		{
 			char	*abs_path = get_abs_path(path, dir_info->content[i]->d_name);
 			if (!abs_path)
-				return (NULL);
+			return (NULL);
+			names[j] = dir_info->content[i]->d_name;
 			stat(abs_path, st[j++]);
 			free(abs_path);
 		}
 	}
 	set_permissions(content_list, st);
 	set_nlink(content_list, st, size);
-	// ft_printf(" %u %s %s ", st->st_nlink,
-	// 	getpwuid(st->st_uid)->pw_name, getgrgid(st->st_gid)->gr_name);
-	// print_size_and_time(st->st_size, st->st_mtime);
-	// ft_printf(" %s\n", dir->d_name);
-	free(content_list);
+	set_user_name(content_list, st, size);
+	set_group_name(content_list, st, size);
+	set_size(content_list, st, size);
+	set_time(content_list, st, size);
+	set_name(content_list, names, size);
 	for (int k = 0; st[k]; k++)
 		free(st[k]);
 	free(st);
-	return (NULL);
+	return (content_list);
 }
