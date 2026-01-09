@@ -6,13 +6,13 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 09:40:02 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 15:18:04 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/09 15:50:22 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static char	*get_abs_path(char *pwd, char *path, unsigned char options)
+static char	*get_abs_path(char *pwd, char *path, unsigned char options, int put_dir_name)
 {
 	static int	first = 1;
 	char		*abs_path;
@@ -27,7 +27,7 @@ static char	*get_abs_path(char *pwd, char *path, unsigned char options)
 	ft_strlcpy(abs_path, pwd, ft_strlen(pwd) + 1);
 	abs_path[ft_strlen(pwd)] = '/';
 	ft_strlcpy(abs_path + ft_strlen(pwd) + 1, path, ft_strlen(path) + 1);
-	if (RECURSIVE_OPT(options))
+	if (RECURSIVE_OPT(options) || put_dir_name)
 		ft_printf("%s:\n", path);
 	return (abs_path);
 }
@@ -60,7 +60,7 @@ static char	*get_next_path(char *path, char *dir)
 }
 
 static int	launch_recursion(t_dir_info *dir_info, char *pwd,
-	char *abs_path, char *path, unsigned char options)
+	char *abs_path, char *path, unsigned char options, int put_dir_name)
 {
 	struct stat	*st;
 	char		*next_abs_path;
@@ -82,7 +82,7 @@ static int	launch_recursion(t_dir_info *dir_info, char *pwd,
 				next_path = get_next_path(path, dir_info->content[i]->d_name);
 				if (!next_path)
 					return (free(st), free(next_abs_path), ERROR);
-				handle_directories(pwd, next_path, options);
+				handle_directories(pwd, next_path, options, put_dir_name);
 				free(next_path);
 			}
 			free(next_abs_path);
@@ -92,12 +92,12 @@ static int	launch_recursion(t_dir_info *dir_info, char *pwd,
 	return SUCCESS;
 }
 
-void	handle_directories(char *pwd, char *path, unsigned char options)
+void	handle_directories(char *pwd, char *path, unsigned char options, int put_dir_name)
 {
 	t_dir_info	*dir_info;
 	char		*abs_path;
 
-	abs_path = get_abs_path(pwd, path, options);
+	abs_path = get_abs_path(pwd, path, options, put_dir_name);
 	if (!abs_path)
 		exit(ERROR);
 	dir_info = get_dir_info(abs_path);
@@ -106,7 +106,7 @@ void	handle_directories(char *pwd, char *path, unsigned char options)
 	}
 	print_content(dir_info, path, options);
 	if (RECURSIVE_OPT(options)) {
-		if (launch_recursion(dir_info, pwd, abs_path, path, options) == ERROR) {
+		if (launch_recursion(dir_info, pwd, abs_path, path, options, put_dir_name) == ERROR) {
 			closedir(dir_info->dir);
 			(free(dir_info->content), free(dir_info), free(abs_path));
 			exit(ERROR);

@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 14:58:50 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 15:18:37 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/09 16:06:53 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,18 +53,41 @@ static char	*find_current_directory(char **env)
 int	main(int ac, char **av, char **env)
 {
 	unsigned char	options = 0;
+	int				count = 0;
 
 	for (int i = 1; i < ac; i++) {
 		if (av[i][0] == '-') {
 			if (!av[i][1])
 				invalid_argument_message(127);
-			while (*(++(av[i])))
-				options = add_option(options, *(av[i]));
+			for (int j = 1; av[i][j]; j++)
+				options = add_option(options, av[i][j]);
+		} else {
+			count++;
 		}
 	}
 	char	*pwd = find_current_directory(env);
 	if (!pwd) {
 		ft_putstr_fd(RED "Error: can't find PWD in env\n" RESET, 2); exit(ERROR);
 	}
-	handle_directories(pwd, ".", options);
+	if (count > 0) {
+		char	**args = malloc(sizeof(char *) * (count + 1));
+		if (!args)
+			return ERROR;
+		int		j = 0;
+		for (int i = 1; i < ac; i++) {
+			if (av[i][0] != '-') {
+				args[j++] = av[i];
+			}
+		}
+		args[j] = NULL;
+		for (int i = 0; i < count; i++) {
+			if (args[i][0] == '/')
+				handle_directories(args[i], ".", options, count > 1);
+			else
+				handle_directories(pwd, args[i], options, count > 1);
+		}
+		free(args);
+	} else {
+		handle_directories(pwd, ".", options, 0);
+	}
 }
