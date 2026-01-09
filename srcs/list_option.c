@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 13:49:05 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 15:16:23 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/09 15:31:15 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,6 +210,7 @@ static void	set_name(char **content_list, char *names[], int size)
 char	**get_content_list(t_dir_info *dir_info, char *path, unsigned char options)
 {
 	int			size;
+	blkcnt_t	total_blocks = 0;
 	struct stat	**st = malloc_stat_list(dir_info, options, &size);
 	char		**content_list = malloc_content_list(dir_info, options);
 	char		*names[size];
@@ -224,10 +225,12 @@ char	**get_content_list(t_dir_info *dir_info, char *path, unsigned char options)
 			if (!abs_path)
 			return (NULL);
 			names[j] = dir_info->content[i]->d_name;
-			stat(abs_path, st[j++]);
+			stat(abs_path, st[j]);
+			total_blocks += st[j++]->st_blocks;
 			free(abs_path);
 		}
 	}
+	ft_printf("total %i\n", total_blocks >> 1);
 	set_permissions(content_list, st);
 	set_nlink(content_list, st, size);
 	set_user_name(content_list, st, size);
