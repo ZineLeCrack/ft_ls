@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 18:03:36 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 15:21:17 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/09 16:12:58 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,10 @@ static int	malloc_content(char *path, struct dirent ***content)
 {
 	DIR				*dir = opendir(path);
 	if (!dir) {
-		ft_putstr_fd(RED "Error: can't open pwd\n" RESET, 2); exit(1);
+		ft_putstr_fd(RED "ft_ls: cannot access '", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd("': No such file or directory\n" RESET, 2);
+		exit(2);
 	}
 
 	struct dirent	*entry;
@@ -37,7 +40,10 @@ static DIR	*get_content(char *path, struct dirent ***content)
 {
 	DIR				*dir = opendir(path);
 	if (!dir) {
-		ft_putstr_fd(RED "Error: can't open pwd\n" RESET, 2); exit(1);
+		ft_putstr_fd(RED "ft_ls: cannot access '", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd("': No such file or directory\n" RESET, 2);
+		exit(2);
 	}
 
 	struct dirent	*entry;
