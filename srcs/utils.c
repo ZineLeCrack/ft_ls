@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 10:18:09 by romain            #+#    #+#             */
-/*   Updated: 2026/01/08 13:37:37 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/09 15:22:32 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@ int	ft_strcasecmp(const char *s1, const char *s2)
 		s1++;
 	while (*s2 == '.')
 		s2++;
-	while (*s1 || *s2)
-	{
+	while (*s1 || *s2) {
 		c1 = (unsigned char)*s1;
 		c2 = (unsigned char)*s2;
 		if (c1 >= 'A' && c1 <= 'Z')
@@ -36,5 +35,5 @@ int	ft_strcasecmp(const char *s1, const char *s2)
 		if (*s2)
 			s2++;
 	}
-	return (0);
+	return 0;
 }
