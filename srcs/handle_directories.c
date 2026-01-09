@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 09:40:02 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 15:50:22 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/09 20:35:54 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,16 +70,16 @@ static int	launch_recursion(t_dir_info *dir_info, char *pwd,
 	if (!st)
 		return ERROR;
 	for (int i = 0; i < dir_info->size; i++) {
-		if (dir_info->content[i]->d_name[0] != '.' || ALL_OPT(options)) {
-			next_abs_path = get_next_abs_path(abs_path, dir_info->content[i]->d_name);
+		if (dir_info->content[i][0] != '.' || ALL_OPT(options)) {
+			next_abs_path = get_next_abs_path(abs_path, dir_info->content[i]);
 			if (!next_abs_path)
 				return (free(st), ERROR);
 			stat(next_abs_path, st);
 			if (S_ISDIR(st->st_mode)
-			&& ft_strcmp(dir_info->content[i]->d_name, ".")
-			&& ft_strcmp(dir_info->content[i]->d_name, ".."))
+			&& ft_strcmp(dir_info->content[i], ".")
+			&& ft_strcmp(dir_info->content[i], ".."))
 			{
-				next_path = get_next_path(path, dir_info->content[i]->d_name);
+				next_path = get_next_path(path, dir_info->content[i]);
 				if (!next_path)
 					return (free(st), free(next_abs_path), ERROR);
 				handle_directories(pwd, next_path, options, put_dir_name);
@@ -107,11 +107,11 @@ void	handle_directories(char *pwd, char *path, unsigned char options, int put_di
 	print_content(dir_info, path, options);
 	if (RECURSIVE_OPT(options)) {
 		if (launch_recursion(dir_info, pwd, abs_path, path, options, put_dir_name) == ERROR) {
-			closedir(dir_info->dir);
 			(free(dir_info->content), free(dir_info), free(abs_path));
 			exit(ERROR);
 		}
 	}
-	closedir(dir_info->dir);
+	for (int i = 0; i < dir_info->size; i++)
+		free(dir_info->content[i]);
 	(free(dir_info->content), free(dir_info), free(abs_path));
 }

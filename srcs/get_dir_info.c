@@ -6,13 +6,13 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 18:03:36 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 16:12:58 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/09 20:30:38 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static int	malloc_content(char *path, struct dirent ***content)
+static int	malloc_content(char *path, char ***content)
 {
 	DIR				*dir = opendir(path);
 	if (!dir) {
@@ -31,12 +31,12 @@ static int	malloc_content(char *path, struct dirent ***content)
 			break ;
 		count++;
 	}
-	(*content) = malloc(sizeof(struct dirent *) * (count + 1));
+	(*content) = malloc(sizeof(char *) * (count + 1));
 	closedir(dir);
 	return count;
 }
 
-static DIR	*get_content(char *path, struct dirent ***content)
+static void	get_content(char *path, char ***content)
 {
 	DIR				*dir = opendir(path);
 	if (!dir) {
@@ -53,20 +53,20 @@ static DIR	*get_content(char *path, struct dirent ***content)
 		entry = readdir(dir);
 		if (!entry)
 			break ;
-		(*content)[count] = entry;
+		(*content)[count] = ft_strdup(entry->d_name);
 		count++;
 	}
 	(*content)[count] = NULL;
-	return dir;
+	closedir(dir);
 }
 
-static void	sort_content(int size, struct dirent ***content)
+static void	sort_content(int size, char ***content)
 {
-	struct dirent	*tmp;
+	char	*tmp;
 
 	for (int i = 0; i < size - 1; i++) {
 		for (int j = i + 1; j < size; j++) {
-			if (ft_strcasecmp((*content)[i]->d_name, (*content)[j]->d_name) > 0) {
+			if (ft_strcasecmp((*content)[i], (*content)[j]) > 0) {
 				tmp = (*content)[i];
 				(*content)[i] = (*content)[j];
 				(*content)[j] = tmp;
@@ -77,11 +77,11 @@ static void	sort_content(int size, struct dirent ***content)
 
 t_dir_info	*get_dir_info(char *path)
 {
-	struct dirent	**content;
+	char	**content;
 
 	t_dir_info		*dir_info = malloc(sizeof(t_dir_info));
 	dir_info->size = malloc_content(path, &content);
-	dir_info->dir = get_content(path, &content);
+	get_content(path, &content);
 	sort_content(dir_info->size, &content);
 	dir_info->content = content;
 	return dir_info;

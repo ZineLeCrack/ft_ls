@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 14:59:59 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 15:49:46 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/09 20:28:04 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,8 @@
 
 typedef struct s_dir_info
 {
-	DIR				*dir;
-	int				size;
-	struct dirent	**content;
+	int		size;
+	char	**content;
 }	t_dir_info;
 
 int			ft_strcasecmp(const char *s1, const char *s2);

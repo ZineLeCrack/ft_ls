@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 13:49:05 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 15:31:15 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/09 20:32:07 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static struct stat	**malloc_stat_list(t_dir_info *dir_info, unsigned char option
 
 	count = 0;
 	for (int i = 0; i < dir_info->size; i++) {
-		if (dir_info->content[i]->d_name[0] != '.' || ALL_OPT(options))
+		if (dir_info->content[i][0] != '.' || ALL_OPT(options))
 			count++;
 	}
 	st = malloc(sizeof(struct stat *) * (count + 1));
@@ -67,7 +67,7 @@ static char	**malloc_content_list(t_dir_info *dir_info, unsigned char options)
 	int	count = 0;
 
 	for (int i = 0; i < dir_info->size; i++)
-		if (dir_info->content[i]->d_name[0] != '.' || ALL_OPT(options))
+		if (dir_info->content[i][0] != '.' || ALL_OPT(options))
 			count++;
 	return (malloc(sizeof(char *) * (count + 1)));
 }
@@ -219,12 +219,12 @@ char	**get_content_list(t_dir_info *dir_info, char *path, unsigned char options)
 	int	j = 0;
 	for  (int i = 0; i < dir_info->size; i++)
 	{
-		if (dir_info->content[i]->d_name[0] != '.' || ALL_OPT(options))
+		if (dir_info->content[i][0] != '.' || ALL_OPT(options))
 		{
-			char	*abs_path = get_abs_path(path, dir_info->content[i]->d_name);
+			char	*abs_path = get_abs_path(path, dir_info->content[i]);
 			if (!abs_path)
 			return (NULL);
-			names[j] = dir_info->content[i]->d_name;
+			names[j] = dir_info->content[i];
 			stat(abs_path, st[j]);
 			total_blocks += st[j++]->st_blocks;
 			free(abs_path);
