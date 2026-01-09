@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 14:58:50 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 11:27:38 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/09 15:18:37 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,8 @@ int	main(int ac, char **av, char **env)
 {
 	unsigned char	options = 0;
 
-	for (int i = 1; i < ac; i++)
-	{
-		if (av[i][0] == '-')
-		{
+	for (int i = 1; i < ac; i++) {
+		if (av[i][0] == '-') {
 			if (!av[i][1])
 				invalid_argument_message(127);
 			while (*(++(av[i])))

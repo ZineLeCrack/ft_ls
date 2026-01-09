@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 13:49:05 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 15:12:24 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/09 15:16:23 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,27 +42,6 @@ static char	get_type(mode_t mode)
 	else
 		return '-';
 }
-
-// static void	print_size_and_time(off_t size, time_t time)
-// {
-// 	char	*str;
-// 	long	n;
-
-// 	if (size == 0l)
-// 		ft_printf("      ");
-// 	else
-// 	{
-// 		n = 1000000;
-// 		while (n > size)
-// 		{
-// 			n /= 10;
-// 			write(1, " ", 1);
-// 		}
-// 	}
-// 	ft_printf("%i ", size);
-// 	str = ctime(&time);
-// 	write(1, str + 4, 12);
-// }
 
 static struct stat	**malloc_stat_list(t_dir_info *dir_info, unsigned char options, int *size)
 {

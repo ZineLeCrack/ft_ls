@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 18:03:36 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 11:22:19 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/09 15:21:17 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,7 @@ static int	malloc_content(char *path, struct dirent ***content)
 	struct dirent	*entry;
 	size_t			count = 0;
 
-	while (1)
-	{
+	while (1) {
 		entry = readdir(dir);
 		if (!entry)
 			break ;
@@ -44,8 +43,7 @@ static DIR	*get_content(char *path, struct dirent ***content)
 	struct dirent	*entry;
 	size_t			count = 0;
 
-	while (1)
-	{
+	while (1) {
 		entry = readdir(dir);
 		if (!entry)
 			break ;
@@ -60,12 +58,9 @@ static void	sort_content(int size, struct dirent ***content)
 {
 	struct dirent	*tmp;
 
-	for (int i = 0; i < size - 1; i++)
-	{
-		for (int j = i + 1; j < size; j++)
-		{
-			if (ft_strcasecmp((*content)[i]->d_name, (*content)[j]->d_name) > 0)
-			{
+	for (int i = 0; i < size - 1; i++) {
+		for (int j = i + 1; j < size; j++) {
+			if (ft_strcasecmp((*content)[i]->d_name, (*content)[j]->d_name) > 0) {
 				tmp = (*content)[i];
 				(*content)[i] = (*content)[j];
 				(*content)[j] = tmp;
