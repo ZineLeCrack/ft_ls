@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 18:03:36 by romain            #+#    #+#             */
-/*   Updated: 2026/01/10 14:26:14 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/10 14:41:12 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,24 @@ static int	is_dir(char *path)
 	return is_dir ? TRUE : FALSE;
 }
 
-t_dir_info	*get_dir_info(char *path, char *abs_path)
+static void	reverse_content(int size, char ***content)
+{
+	char	**new_content = malloc(sizeof(char *) * (size + 1));
+	if (!new_content) {
+		ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+		return ;
+	}
+
+	for (int i = 0; i < size; i++) {
+		new_content[i] = (*content)[size - i - 1];
+	}
+	new_content[size] = NULL;
+
+	free(*content);
+	(*content) = new_content;
+}
+
+t_dir_info	*get_dir_info(char *path, char *abs_path, unsigned char options)
 {
 	char	**content;
 
@@ -127,6 +144,16 @@ t_dir_info	*get_dir_info(char *path, char *abs_path)
 			return NULL;
 		}
 		sort_content(dir_info->size, &content);
+		if (REVERSE_OPT(options)) {
+			reverse_content(dir_info->size, &content);
+			if (!content) {
+				for (int i = 0; content[i]; i++)
+					free(content[i]);
+				free(content);
+				free(dir_info);
+				return NULL;
+			}
+		}
 		dir_info->content = content;
 		dir_info->is_dir = 1;
 		return dir_info;

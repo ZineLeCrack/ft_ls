@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 09:40:02 by romain            #+#    #+#             */
-/*   Updated: 2026/01/10 14:30:10 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/10 14:35:05 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,7 @@ void	handle_directories(char *pwd, char *path, unsigned char options, int put_di
 	abs_path = get_abs_path(pwd, path, options, put_dir_name);
 	if (!abs_path)
 		return ;
-	dir_info = get_dir_info(path, abs_path);
+	dir_info = get_dir_info(path, abs_path, options);
 	if (!dir_info) {
 		free(abs_path);
 		return ;

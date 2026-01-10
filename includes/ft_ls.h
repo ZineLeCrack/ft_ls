@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 14:59:59 by romain            #+#    #+#             */
-/*   Updated: 2026/01/10 14:25:37 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/10 14:34:58 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ typedef struct s_dir_info
 }	t_dir_info;
 
 int			ft_strcasecmp(const char *s1, const char *s2);
-t_dir_info	*get_dir_info(char *path, char *abs_path);
+t_dir_info	*get_dir_info(char *path, char *abs_path, unsigned char options);
 void		print_content(t_dir_info *dir_info, char *path, unsigned char options);
 char		**get_content_list(t_dir_info *dir_info, char *path, unsigned char options);
 void		handle_directories(char *pwd, char *path, unsigned char options, int put_dir_name);
