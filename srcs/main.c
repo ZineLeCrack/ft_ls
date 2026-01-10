@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 14:58:50 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 20:10:54 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/10 12:58:07 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ static void	invalid_argument_message(char arg)
 	ft_putstr_fd(RED "Invalid argument: ", 2);
 	ft_putchar_fd(arg, 2);
 	ft_putstr_fd("\n" RESET, 2);
-	exit(1);
 }
 
 static unsigned char	add_option(unsigned char options, char option)
@@ -37,7 +36,7 @@ static unsigned char	add_option(unsigned char options, char option)
 		default:
 		{
 			invalid_argument_message(option);
-			return 0;
+			return 255;
 		}
 	}
 }
@@ -57,22 +56,30 @@ int	main(int ac, char **av, char **env)
 
 	for (int i = 1; i < ac; i++) {
 		if (av[i][0] == '-') {
-			if (!av[i][1])
+			if (!av[i][1]) {
 				invalid_argument_message(127);
-			for (int j = 1; av[i][j]; j++)
+				return ERROR;
+			}
+			for (int j = 1; av[i][j]; j++) {
 				options = add_option(options, av[i][j]);
+				if (options == 255)
+					return ERROR;
+			}
 		} else {
 			count++;
 		}
 	}
 	char	*pwd = find_current_directory(env);
 	if (!pwd) {
-		ft_putstr_fd(RED "Error: can't find PWD in env\n" RESET, 2); exit(ERROR);
+		ft_putstr_fd(RED "Error: can't find PWD in env\n" RESET, 2);
+		return ERROR;
 	}
 	if (count > 0) {
 		char	**args = malloc(sizeof(char *) * (count + 1));
-		if (!args)
+		if (!args) {
+			ft_putstr_fd(RED "Fatal error\n" RESET, 2);
 			return ERROR;
+		}
 		int		j = 0;
 		for (int i = 1; i < ac; i++) {
 			if (av[i][0] != '-') {

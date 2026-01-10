@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 13:49:05 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 20:32:07 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/10 14:27:50 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,14 @@ static char	*get_abs_path(char *path, char *name)
 	char		*abs_path;
 
 	abs_path = malloc(ft_strlen(path) + ft_strlen(name) + 2);
-	if (!abs_path)
-		return (NULL);
+	if (!abs_path) {
+		ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+		return NULL;
+	}
 	ft_strlcpy(abs_path, path, ft_strlen(path) + 1);
 	abs_path[ft_strlen(path)] = '/';
 	ft_strlcpy(abs_path + ft_strlen(path) + 1, name, ft_strlen(name) + 1);
-	return (abs_path);
+	return abs_path;
 }
 
 static char	get_type(mode_t mode)
@@ -54,9 +56,21 @@ static struct stat	**malloc_stat_list(t_dir_info *dir_info, unsigned char option
 			count++;
 	}
 	st = malloc(sizeof(struct stat *) * (count + 1));
+	if (!st) {
+		ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+		return NULL;
+	}
 	int i;
-	for (i = 0; i < count; i++)
+	for (i = 0; i < count; i++) {
 		st[i] = malloc(sizeof(struct stat));
+		if (!st[i]) {
+			ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+			for (int j = 0; j < i; j++)
+				free(st[i]);
+			free(st);
+			return NULL;
+		}
+	}
 	st[i] = NULL;
 	(*size) = count;
 	return (st);
@@ -64,18 +78,30 @@ static struct stat	**malloc_stat_list(t_dir_info *dir_info, unsigned char option
 
 static char	**malloc_content_list(t_dir_info *dir_info, unsigned char options)
 {
-	int	count = 0;
+	int		count = 0;
+	char	**content_list;
 
 	for (int i = 0; i < dir_info->size; i++)
 		if (dir_info->content[i][0] != '.' || ALL_OPT(options))
 			count++;
-	return (malloc(sizeof(char *) * (count + 1)));
+	content_list = malloc(sizeof(char *) * (count + 1));
+	if (!content_list) {
+		ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+		return NULL;
+	}
+	return content_list;
 }
 
-static void	set_permissions(char **content_list, struct stat **st)
+static int	set_permissions(char **content_list, struct stat **st)
 {
 	for (int i = 0; st[i]; i++) {
 		char	*permission = malloc(sizeof(char) * 12);
+		if (!permission) {
+			ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+			for (int j = 0; j < i; j++)
+				free(content_list[j]);
+			return ERROR;
+		}
 		permission[0] = get_type(st[i]->st_mode);
 		permission[1] = st[i]->st_mode & S_IRUSR ? 'r' : '-';
 		permission[2] = st[i]->st_mode & S_IWUSR ? 'w' : '-';
@@ -90,13 +116,18 @@ static void	set_permissions(char **content_list, struct stat **st)
 		permission[11] = '\0';
 		content_list[i] = permission;
 	}
+	return SUCCESS;
 }
 
 static char	*get_same_len_join(char *s1, char *s2, int size, char c)
 {
 	char	*str = malloc(sizeof(char) * (size + 1));
-	int	i;
+	if (!str) {
+		ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+		return NULL;
+	}
 
+	int	i;
 	for (i = 0; s1[i]; i++)
 		str[i] = s1[i];
 	for (size_t j = 0; j < size - (ft_strlen(s1) + ft_strlen(s2)); j++)
@@ -107,26 +138,38 @@ static char	*get_same_len_join(char *s1, char *s2, int size, char c)
 	return str;
 }
 
-static void	set_nlink(char **content_list, struct stat **st, int size)
+static int	set_nlink(char **content_list, struct stat **st, int size)
 {
 	char	*numbers[size];
 	int		max = 0;
 
 	for (int i = 0; st[i]; i++) {
 		char	*n = ft_itoa((int)(st[i]->st_nlink));
+		if (!n) {
+			ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+			for (int j = 0; j < i; j++)
+				free(numbers[j]);
+			return ERROR;
+		}
 		int		len = ft_strlen(n);
 		numbers[i] = n;
 		max = len > max ? len : max;
 	}
 	for (int i = 0; st[i]; i++) {
 		char	*tmp = get_same_len_join(content_list[i], numbers[i], max + ft_strlen(content_list[i]), ' ');
+		if (!tmp) {
+			for (int j = i; j < size; j++)
+				free(numbers[j]);
+			return ERROR;
+		}
 		free(content_list[i]);
 		free(numbers[i]);
 		content_list[i] = tmp;
 	}
+	return SUCCESS;
 }
 
-static void	set_user_name(char **content_list, struct stat **st, int size)
+static int	set_user_name(char **content_list, struct stat **st, int size)
 {
 	char	*names[size];
 	int		max = 0;
@@ -138,12 +181,15 @@ static void	set_user_name(char **content_list, struct stat **st, int size)
 	}
 	for (int i = 0; i < size; i++) {
 		char	*tmp = get_same_len_join(content_list[i], names[i], max + ft_strlen(content_list[i]) + 1, ' ');
+		if (!tmp)
+			return ERROR;
 		free(content_list[i]);
 		content_list[i] = tmp;
 	}
+	return SUCCESS;
 }
 
-static void	set_group_name(char **content_list, struct stat **st, int size)
+static int	set_group_name(char **content_list, struct stat **st, int size)
 {
 	char	*names[size];
 	int		max = 0;
@@ -155,89 +201,155 @@ static void	set_group_name(char **content_list, struct stat **st, int size)
 	}
 	for (int i = 0; i < size; i++) {
 		char	*tmp = get_same_len_join(content_list[i], names[i], max + ft_strlen(content_list[i]) + 1, ' ');
+		if (!tmp)
+			return ERROR;
 		free(content_list[i]);
 		content_list[i] = tmp;
 	}
+	return SUCCESS;
 }
 
-static void	set_size(char **content_list, struct stat **st, int size)
+static int	set_size(char **content_list, struct stat **st, int size)
 {
 	char	*sizes[size];
 	int		max = 0;
 
 	for (int i = 0; st[i]; i++) {
 		char	*n = ft_itoa((int)(st[i]->st_size));
+		if (!n) {
+			ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+			for (int j = 0; j < i; j++)
+				free(sizes[j]);
+			return ERROR;
+		}
 		int		len = ft_strlen(n);
 		sizes[i] = n;
 		max = len > max ? len : max;
 	}
 	for (int i = 0; st[i]; i++) {
 		char	*tmp = get_same_len_join(content_list[i], sizes[i], max + ft_strlen(content_list[i]) + 1, ' ');
+		if (!tmp) {
+			for (int j = i; j < size; j++)
+				free(sizes[j]);
+			return ERROR;
+		}
 		free(content_list[i]);
 		free(sizes[i]);
 		content_list[i] = tmp;
 	}
+	return SUCCESS;
 }
 
-static void	set_time(char **content_list, struct stat **st, int size)
+static int	set_time(char **content_list, struct stat **st, int size)
 {
 	char	*times[size];
 	int		max = 0;
 
 	for (int i = 0; st[i]; i++) {
 		char	*time = ft_substr(ctime(&st[i]->st_mtime), 4, 12);
+		if (!time) {
+			ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+			for (int j = 0; j < i; j++)
+				free(times[j]);
+			return ERROR;
+		}
 		int		len = ft_strlen(time);
 		times[i] = time;
 		max = len > max ? len : max;
 	}
 	for (int i = 0; st[i]; i++) {
 		char	*tmp = get_same_len_join(content_list[i], times[i], max + ft_strlen(content_list[i]) + 1, ' ');
+		if (!tmp) {
+			for (int j = i; j < size; j++)
+				free(times[j]);
+			return ERROR;
+		}
 		free(content_list[i]);
 		free(times[i]);
 		content_list[i] = tmp;
 	}
+	return SUCCESS;
 }
 
-static void	set_name(char **content_list, char *names[], int size)
+static int	set_name(char **content_list, char *names[], int size)
 {
 	for (int i = 0; i < size; i++) {
 		char	*tmp = get_same_len_join(content_list[i], names[i], ft_strlen(content_list[i]) + ft_strlen(names[i]) + 1, ' ');
+		if (!tmp)
+			return ERROR;
 		free(content_list[i]);
 		content_list[i] = tmp;
 	}
+	return SUCCESS;
 }
 
 char	**get_content_list(t_dir_info *dir_info, char *path, unsigned char options)
 {
 	int			size;
-	blkcnt_t	total_blocks = 0;
 	struct stat	**st = malloc_stat_list(dir_info, options, &size);
-	char		**content_list = malloc_content_list(dir_info, options);
-	char		*names[size];
+	if (!st)
+		return NULL;
 
+	char	**content_list = malloc_content_list(dir_info, options);
+	if (!content_list) {
+		for (int i = 0; st[i]; i++)
+			free(st[i]);
+		free(st);
+		return NULL;
+	}
+
+	char	*names[size];
+
+	blkcnt_t	total_blocks = 0;
 	content_list[size] = NULL;
 	int	j = 0;
 	for  (int i = 0; i < dir_info->size; i++)
 	{
 		if (dir_info->content[i][0] != '.' || ALL_OPT(options))
 		{
-			char	*abs_path = get_abs_path(path, dir_info->content[i]);
-			if (!abs_path)
-			return (NULL);
+			char	*abs_path;
+			if (dir_info->is_dir)
+				abs_path = get_abs_path(path, dir_info->content[i]);
+			else
+				abs_path = ft_strdup(path);
+			if (!abs_path) {
+				for (int i = 0; st[i]; i++)
+					free(st[i]);
+				free(st);
+				free(content_list);
+				return NULL;
+			}
 			names[j] = dir_info->content[i];
-			stat(abs_path, st[j]);
+			if (stat(abs_path, st[j]) == -1)
+				ft_printf(CYAN "%s\n" RESET, abs_path);
 			total_blocks += st[j++]->st_blocks;
 			free(abs_path);
 		}
 	}
 	ft_printf("total %i\n", total_blocks >> 1);
-	set_permissions(content_list, st);
-	set_nlink(content_list, st, size);
-	set_user_name(content_list, st, size);
-	set_group_name(content_list, st, size);
-	set_size(content_list, st, size);
-	set_time(content_list, st, size);
-	set_name(content_list, names, size);
+	if (set_permissions(content_list, st) == ERROR) {
+		for (int i = 0; st[i]; i++)
+			free(st[i]);
+		free(st);
+		free(content_list);
+		return NULL;
+	}
+	if (
+		set_nlink(content_list, st, size) == ERROR ||
+		set_user_name(content_list, st, size) == ERROR ||
+		set_group_name(content_list, st, size) == ERROR ||
+		set_size(content_list, st, size) == ERROR ||
+		set_time(content_list, st, size) == ERROR ||
+		set_name(content_list, names, size) == ERROR
+	) {
+		for (int i = 0; st[i]; i++)
+			free(st[i]);
+		free(st);
+		for (int i = 0; content_list[i]; i++)
+			free(content_list[i]);
+		free(content_list);
+		return NULL;
+	}
 	for (int k = 0; st[k]; k++)
 		free(st[k]);
 	free(st);

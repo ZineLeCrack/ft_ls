@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 14:59:59 by romain            #+#    #+#             */
-/*   Updated: 2026/01/09 20:28:04 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/10 14:25:37 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@
 
 # define SUCCESS	0
 # define ERROR		1
+# define TRUE		2
+# define FALSE		3
 
 # define       ALL_OPT(opt) opt >> 0 & 1U
 # define      LIST_OPT(opt) opt >> 1 & 1U
@@ -45,12 +47,13 @@
 
 typedef struct s_dir_info
 {
+	int		is_dir;
 	int		size;
 	char	**content;
 }	t_dir_info;
 
 int			ft_strcasecmp(const char *s1, const char *s2);
-t_dir_info	*get_dir_info(char *path);
+t_dir_info	*get_dir_info(char *path, char *abs_path);
 void		print_content(t_dir_info *dir_info, char *path, unsigned char options);
 char		**get_content_list(t_dir_info *dir_info, char *path, unsigned char options);
 void		handle_directories(char *pwd, char *path, unsigned char options, int put_dir_name);
