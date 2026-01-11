@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 13:49:05 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 12:05:23 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 12:31:44 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -308,10 +308,7 @@ char	**get_content_list(t_dir_info *dir_info, char *path, unsigned char options)
 		if (!dir_info->is_dir || dir_info->content[i][0] != '.' || ALL_OPT(options))
 		{
 			char	*abs_path;
-			if (dir_info->is_dir)
-				abs_path = get_abs_path(path, dir_info->content[i]);
-			else
-				abs_path = ft_strdup(path);
+			abs_path = get_abs_path(path, dir_info->content[i]);
 			if (!abs_path) {
 				for (int i = 0; st[i]; i++)
 					free(st[i]);
