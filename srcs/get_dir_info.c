@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 18:03:36 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 15:06:43 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 16:32:54 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ t_dir_info	*get_dir_info(char *path, unsigned char options)
 		free(dir_info);
 		return NULL;
 	}
-	sort_content(dir_info->size, &content);
+	sort_content(dir_info->size, &content, options);
 	if (REVERSE_OPT(options)) {
 		reverse_content(dir_info->size, &content);
 	}
