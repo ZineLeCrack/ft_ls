@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 18:03:36 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 12:39:10 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 15:06:43 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,16 @@ static int	malloc_content(char *path, char ***content)
 {
 	DIR				*dir = opendir(path);
 	if (!dir) {
-		ft_putstr_fd(RED "ft_ls: cannot access '", 2);
-		ft_putstr_fd(path, 2);
-		ft_putstr_fd("': No such file or directory\n" RESET, 2);
+		if (errno == ENOENT) {
+			ft_putstr_fd(RED "ft_ls: cannot access '", 2);
+			ft_putstr_fd(path, 2);
+			ft_putstr_fd("': No such file or directory\n" RESET, 2);
+		}
+		if (errno == EACCES) {
+			ft_putstr_fd(RED "ft_ls: cannot open directory '", 2);
+			ft_putstr_fd(path, 2);
+			ft_putstr_fd("': Permission denied\n" RESET, 2);
+		}
 		return -1;
 	}
 
@@ -45,9 +52,16 @@ static int	get_content(char *path, char ***content)
 {
 	DIR				*dir = opendir(path);
 	if (!dir) {
-		ft_putstr_fd(RED "ft_ls: cannot access '", 2);
-		ft_putstr_fd(path, 2);
-		ft_putstr_fd("': No such file or directory\n" RESET, 2);
+		if (errno == ENOENT) {
+			ft_putstr_fd(RED "ft_ls: cannot access '", 2);
+			ft_putstr_fd(path, 2);
+			ft_putstr_fd("': No such file or directory\n" RESET, 2);
+		}
+		if (errno == EACCES) {
+			ft_putstr_fd(RED "ft_ls: cannot open directory '", 2);
+			ft_putstr_fd(path, 2);
+			ft_putstr_fd("': Permission denied\n" RESET, 2);
+		}
 		return -1;
 	}
 

@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 14:59:59 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 13:59:46 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 14:58:25 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include <time.h>
 # include <pwd.h>
 # include <grp.h>
+# include <errno.h>
 # include <sys/types.h>
 # include <sys/stat.h>
 
@@ -36,8 +37,10 @@
 
 # define SUCCESS	0
 # define ERROR		1
-# define TRUE		2
-# define FALSE		3
+# define NSFOD		2
+# define NO_PERM	3
+# define TRUE		4
+# define FALSE		5
 
 # define       ALL_OPT(opt) opt >> 0 & 1U
 # define      LIST_OPT(opt) opt >> 1 & 1U

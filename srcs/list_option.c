@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 13:49:05 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 14:06:34 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 15:28:07 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -259,11 +259,30 @@ static int	set_time(char **content_list, struct stat **st, int size)
 static int	set_name(char **content_list, char *names[], int size)
 {
 	for (int i = 0; i < size; i++) {
-		char	*tmp = get_same_len_join(content_list[i], names[i], ft_strlen(content_list[i]) + ft_strlen(names[i]) + 1, ' ');
+		char	*tmp;
+		tmp = get_same_len_join(content_list[i], names[i], ft_strlen(content_list[i]) + ft_strlen(names[i]) + 1, ' ');
 		if (!tmp)
 			return ERROR;
 		free(content_list[i]);
 		content_list[i] = tmp;
+		if (content_list[i][0] == 'l') {
+			char	buf[1024];
+			ssize_t bytes_read = readlink(names[i], buf, 1023ul);
+			buf[bytes_read] = '\0';
+			char	*slink = ft_strjoin("-> ", buf);
+			if (!slink) {
+				ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+				return ERROR;
+			}
+			tmp = get_same_len_join(content_list[i], slink, ft_strlen(content_list[i]) + ft_strlen(slink) + 1, ' ');
+			if (!tmp) {
+				free(slink);
+				return ERROR;
+			}
+			free(slink);
+			free(content_list[i]);
+			content_list[i] = tmp;
+		}
 	}
 	return SUCCESS;
 }
@@ -299,7 +318,7 @@ char	**get_content_list(t_dir_info *dir_info, char *path, unsigned char options)
 				free(content_list);
 				return NULL;
 			}
-			stat(next_path, st[j]);
+			lstat(next_path, st[j]);
 			total_blocks += st[j++]->st_blocks;
 			free(next_path);
 		}

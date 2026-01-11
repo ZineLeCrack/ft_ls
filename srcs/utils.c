@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 10:18:09 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 13:59:33 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 15:00:13 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,10 +62,10 @@ int	is_dir(char *path)
 	}
 	if (stat(path, st) == -1) {
 		free(st);
-		ft_putstr_fd(RED "ft_ls: cannot access '", 2);
-		ft_putstr_fd(path, 2);
-		ft_putstr_fd("': No such file or directory\n" RESET, 2);
-		return ERROR;
+		if (errno == ENOENT)
+			return NSFOD;
+		if (errno == EACCES)
+			return NO_PERM;
 	}
 	int	is_dir = S_ISDIR(st->st_mode);
 	free(st);

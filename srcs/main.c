@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 14:58:50 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 12:48:42 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 15:02:30 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 static void	invalid_argument_message(char arg)
 {
-	ft_putstr_fd(RED "Invalid argument: ", 2);
+	ft_putstr_fd(RED "ft_ls: invalid option -- '", 2);
 	ft_putchar_fd(arg, 2);
-	ft_putstr_fd("\n" RESET, 2);
+	ft_putstr_fd("'\n" RESET, 2);
 }
 
 static unsigned char	add_option(unsigned char options, char option)
@@ -46,27 +46,39 @@ int	main(int ac, char **av)
 	unsigned char	options = 0;
 	int				directories_count = 0;
 	int				files_count = 0;
+	int				exit_status = 0;
 
 	for (int i = 1; i < ac; i++) {
 		if (av[i][0] == '-') {
 			if (!av[i][1]) {
 				invalid_argument_message(127);
-				return ERROR;
+				return 2;
 			}
 			for (int j = 1; av[i][j]; j++) {
 				options = add_option(options, av[i][j]);
 				if (options == 255)
-					return ERROR;
+					return 2;
 			}
 		} else {
-			if (is_dir(av[i]) == FALSE) {
-				files_count++;
-			} else {
+			int	status = is_dir(av[i]);
+			if (status == TRUE) {
 				directories_count++;
+			} else if (status == FALSE) {
+				files_count++;
+			} else if (status == NSFOD) {
+				ft_putstr_fd(RED "ft_ls: cannot access '", 2);
+				ft_putstr_fd(av[i], 2);
+				ft_putstr_fd("': No such file or directory\n" RESET, 2);
+				exit_status = 2;
+			} else if (status == NO_PERM) {
+				ft_putstr_fd(RED "ft_ls: cannot open directory '", 2);
+				ft_putstr_fd(av[i], 2);
+				ft_putstr_fd("': Permission denied\n" RESET, 2);
+				exit_status = 2;
 			}
 		}
 	}
-	if (directories_count + files_count == 0)
+	if (directories_count + files_count == 0 && exit_status == 0)
 		handle_directories(".", options, 0);
 	else {
 		char	**directories = NULL;
@@ -91,17 +103,17 @@ int	main(int ac, char **av)
 		for (int i = 1; i < ac; i++) {
 			if (av[i][0] != '-') {
 				int status = is_dir(av[i]);
-				if (status == TRUE && directories_count > 0)
-					directories[j++] = av[i];
-				else if (status == FALSE && files_count > 0)
-					files[k++] = av[i];
-				else if (status == ERROR) {
+				if (status == ERROR) {
 					if (directories_count > 0)
 						free(directories);
 					if (files_count > 0)
 						free(files);
 					return ERROR;
 				}
+				if (status == TRUE && directories_count > 0)
+					directories[j++] = av[i];
+				else if (status == FALSE && files_count > 0)
+					files[k++] = av[i];
 			}
 		}
 		if (files_count > 0) {
@@ -112,9 +124,10 @@ int	main(int ac, char **av)
 		if (directories_count > 0) {
 			directories[j] = NULL;
 			for (int i = 0; i < directories_count; i++) {
-				handle_directories(directories[i], options, directories_count > 1);
+				handle_directories(directories[i], options, directories_count + (files_count > 0) > 1);
 			}
 			free(directories);
 		}
 	}
+	return exit_status;
 }
