@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 10:18:09 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 17:26:12 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 18:25:13 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int	is_dir(char *path)
 	return is_dir ? TRUE : FALSE;
 }
 
-void	sort_content(int size, char ***content, unsigned char options)
+void	sort_content(int size, char ***content, char *path, unsigned char options)
 {
 	if (TIME_OPT(options)) {
 		struct stat	*st = malloc(sizeof(struct stat));
@@ -87,8 +87,16 @@ void	sort_content(int size, char ***content, unsigned char options)
 			return ;
 		}
 		for (int i = 0; i < size; i++) {
-			stat((*content)[i], st);
+			char *next_path = get_next_path(path, (*content)[i]);
+			if (!next_path) {
+				ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+				free(times);
+				free(st);
+				return ;
+			}
+			stat(next_path, st);
 			times[i] = st->st_mtime;
+			free(next_path);
 		}
 		for (int i = 0; i < size - 1; i++) {
 			for (int j = i + 1; j < size; j++) {

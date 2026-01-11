@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 14:58:50 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 15:02:30 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 18:05:01 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,9 @@ int	main(int ac, char **av)
 		}
 		if (directories_count > 0) {
 			directories[j] = NULL;
+			sort_content(directories_count, &directories, ".", options);
+			if (REVERSE_OPT(options))
+				reverse_content(directories_count, &directories);
 			for (int i = 0; i < directories_count; i++) {
 				handle_directories(directories[i], options, directories_count + (files_count > 0) > 1);
 			}

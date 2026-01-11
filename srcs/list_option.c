@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 13:49:05 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 15:28:07 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 18:09:09 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -256,7 +256,7 @@ static int	set_time(char **content_list, struct stat **st, int size)
 	return SUCCESS;
 }
 
-static int	set_name(char **content_list, char *names[], int size)
+static int	set_name(char **content_list, char *path, char *names[], int size)
 {
 	for (int i = 0; i < size; i++) {
 		char	*tmp;
@@ -267,7 +267,12 @@ static int	set_name(char **content_list, char *names[], int size)
 		content_list[i] = tmp;
 		if (content_list[i][0] == 'l') {
 			char	buf[1024];
-			ssize_t bytes_read = readlink(names[i], buf, 1023ul);
+			char	*next_path = get_next_path(path, names[i]);
+			if (!next_path) {
+				return ERROR;
+			}
+			ssize_t bytes_read = readlink(next_path, buf, 1023ul);
+			free(next_path);
 			buf[bytes_read] = '\0';
 			char	*slink = ft_strjoin("-> ", buf);
 			if (!slink) {
@@ -333,12 +338,12 @@ char	**get_content_list(t_dir_info *dir_info, char *path, unsigned char options)
 		return NULL;
 	}
 	if (
-		set_nlink     (content_list,    st, size)	== ERROR ||
-		set_user_name (content_list,    st, size)	== ERROR ||
-		set_group_name(content_list,    st, size)	== ERROR ||
-		set_size      (content_list,    st, size)	== ERROR ||
-		set_time      (content_list,    st, size)	== ERROR ||
-		set_name      (content_list, names, size)	== ERROR
+		set_nlink     (content_list,          st, size)	== ERROR ||
+		set_user_name (content_list,          st, size)	== ERROR ||
+		set_group_name(content_list,          st, size)	== ERROR ||
+		set_size      (content_list,          st, size)	== ERROR ||
+		set_time      (content_list,          st, size)	== ERROR ||
+		set_name      (content_list, path, names, size)	== ERROR
 	) {
 		for (int i = 0; st[i]; i++)
 			free(st[i]);
