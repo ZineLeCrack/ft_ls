@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 18:03:36 by romain            #+#    #+#             */
-/*   Updated: 2026/01/10 14:41:12 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 12:21:05 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,102 +86,30 @@ static void	sort_content(int size, char ***content)
 	}
 }
 
-static int	is_dir(char *path)
-{
-	struct stat	*st = malloc(sizeof(struct stat));
-	if (!st) {
-		ft_putstr_fd(RED "Fatal error\n" RESET, 2);
-		return ERROR;
-	}
-	if (stat(path, st) == -1) {
-		free(st);
-		ft_putstr_fd(RED "ft_ls: cannot access '", 2);
-		ft_putstr_fd(path, 2);
-		ft_putstr_fd("': No such file or directory\n" RESET, 2);
-		return ERROR;
-	}
-	int	is_dir = S_ISDIR(st->st_mode);
-	free(st);
-	return is_dir ? TRUE : FALSE;
-}
-
-static void	reverse_content(int size, char ***content)
-{
-	char	**new_content = malloc(sizeof(char *) * (size + 1));
-	if (!new_content) {
-		ft_putstr_fd(RED "Fatal error\n" RESET, 2);
-		return ;
-	}
-
-	for (int i = 0; i < size; i++) {
-		new_content[i] = (*content)[size - i - 1];
-	}
-	new_content[size] = NULL;
-
-	free(*content);
-	(*content) = new_content;
-}
-
-t_dir_info	*get_dir_info(char *path, char *abs_path, unsigned char options)
+t_dir_info	*get_dir_info(char *abs_path, unsigned char options)
 {
 	char	**content;
 
-	int	status = is_dir(abs_path);
-	if (status == TRUE) {
-		t_dir_info		*dir_info = malloc(sizeof(t_dir_info));
-		if (!dir_info) {
-			ft_putstr_fd(RED "Fatal error\n" RESET, 2);
-			return NULL;
-		}
-		dir_info->size = malloc_content(abs_path, &content);
-		if (dir_info->size == -1) {
-			free(dir_info);
-			return NULL;
-		}
-		if  (get_content(abs_path, &content) == -1) {
-			free(content);
-			free(dir_info);
-			return NULL;
-		}
-		sort_content(dir_info->size, &content);
-		if (REVERSE_OPT(options)) {
-			reverse_content(dir_info->size, &content);
-			if (!content) {
-				for (int i = 0; content[i]; i++)
-					free(content[i]);
-				free(content);
-				free(dir_info);
-				return NULL;
-			}
-		}
-		dir_info->content = content;
-		dir_info->is_dir = 1;
-		return dir_info;
-	} else if (status == FALSE) {
-		t_dir_info		*dir_info = malloc(sizeof(t_dir_info));
-		if (!dir_info) {
-			ft_putstr_fd(RED "Fatal error\n" RESET, 2);
-			return NULL;
-		}
-		dir_info->size = 1;
-		content = malloc(sizeof(char *) * 2);
-		if (!content) {
-			ft_putstr_fd(RED "Fatal error\n" RESET, 2);
-			free(dir_info);
-			return NULL;
-		}
-		content[0] = ft_strdup(path);
-		if (!content[0]) {
-			ft_putstr_fd(RED "Fatal error\n" RESET, 2);
-			free(content);
-			free(dir_info);
-			return NULL;
-		}
-		content[1] = NULL;
-		dir_info->content = content;
-		dir_info->is_dir = 0;
-		return dir_info;
-	} else {
+	t_dir_info		*dir_info = malloc(sizeof(t_dir_info));
+	if (!dir_info) {
+		ft_putstr_fd(RED "Fatal error\n" RESET, 2);
 		return NULL;
 	}
+	dir_info->size = malloc_content(abs_path, &content);
+	if (dir_info->size == -1) {
+		free(dir_info);
+		return NULL;
+	}
+	if  (get_content(abs_path, &content) == -1) {
+		free(content);
+		free(dir_info);
+		return NULL;
+	}
+	sort_content(dir_info->size, &content);
+	if (REVERSE_OPT(options)) {
+		reverse_content(dir_info->size, &content);
+	}
+	dir_info->content = content;
+	dir_info->is_dir = 1;
+	return dir_info;
 }

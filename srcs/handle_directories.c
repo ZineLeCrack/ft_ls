@@ -6,21 +6,16 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 09:40:02 by romain            #+#    #+#             */
-/*   Updated: 2026/01/10 14:35:05 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 12:20:53 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static char	*get_abs_path(char *pwd, char *path, unsigned char options, int put_dir_name)
+static char	*get_abs_path(char *pwd, char *path)
 {
-	static int	first = 1;
 	char		*abs_path;
 
-	if (!first)
-		ft_printf("\n");
-	else
-		first = 0;
 	abs_path = malloc(ft_strlen(pwd) + ft_strlen(path) + 2);
 	if (!abs_path) {
 		ft_putstr_fd(RED "Fatal error\n" RESET, 2);
@@ -29,8 +24,6 @@ static char	*get_abs_path(char *pwd, char *path, unsigned char options, int put_
 	ft_strlcpy(abs_path, pwd, ft_strlen(pwd) + 1);
 	abs_path[ft_strlen(pwd)] = '/';
 	ft_strlcpy(abs_path + ft_strlen(pwd) + 1, path, ft_strlen(path) + 1);
-	if (RECURSIVE_OPT(options) || put_dir_name)
-		ft_printf("%s:\n", path);
 	return abs_path;
 }
 
@@ -110,15 +103,15 @@ void	handle_directories(char *pwd, char *path, unsigned char options, int put_di
 	t_dir_info	*dir_info;
 	char		*abs_path;
 
-	abs_path = get_abs_path(pwd, path, options, put_dir_name);
+	abs_path = get_abs_path(pwd, path);
 	if (!abs_path)
 		return ;
-	dir_info = get_dir_info(path, abs_path, options);
+	dir_info = get_dir_info(abs_path, options);
 	if (!dir_info) {
 		free(abs_path);
 		return ;
 	}
-	print_content(dir_info, path, options);
+	print_content(dir_info, path, put_dir_name, options);
 	if (RECURSIVE_OPT(options) && dir_info->is_dir) {
 		if (launch_recursion(dir_info, pwd, abs_path, path, options, put_dir_name) == ERROR) {
 			for (int i = 0; i < dir_info->size; i++)
@@ -134,4 +127,22 @@ void	handle_directories(char *pwd, char *path, unsigned char options, int put_di
 	free(dir_info->content);
 	free(dir_info);
 	free(abs_path);
+}
+
+void	handle_files(char *pwd, char **files, int size, unsigned char options)
+{
+	t_dir_info	*dir_info = malloc(sizeof(t_dir_info));
+	if (!dir_info) {
+		ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+		return ;
+	}
+
+	if (REVERSE_OPT(options)) {
+		reverse_content(size, &files);
+	}
+	dir_info->content = files;
+	dir_info->size = size;
+	dir_info->is_dir = 0;
+	print_content(dir_info, pwd, 0, options);
+	free(dir_info);
 }

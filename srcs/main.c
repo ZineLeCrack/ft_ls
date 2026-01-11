@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 14:58:50 by romain            #+#    #+#             */
-/*   Updated: 2026/01/10 12:58:07 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 11:58:24 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,8 @@ static char	*find_current_directory(char **env)
 int	main(int ac, char **av, char **env)
 {
 	unsigned char	options = 0;
-	int				count = 0;
+	int				directories_count = 0;
+	int				files_count = 0;
 
 	for (int i = 1; i < ac; i++) {
 		if (av[i][0] == '-') {
@@ -66,7 +67,11 @@ int	main(int ac, char **av, char **env)
 					return ERROR;
 			}
 		} else {
-			count++;
+			if (is_dir(av[i]) == FALSE) {
+				files_count++;
+			} else {
+				directories_count++;
+			}
 		}
 	}
 	char	*pwd = find_current_directory(env);
@@ -74,27 +79,58 @@ int	main(int ac, char **av, char **env)
 		ft_putstr_fd(RED "Error: can't find PWD in env\n" RESET, 2);
 		return ERROR;
 	}
-	if (count > 0) {
-		char	**args = malloc(sizeof(char *) * (count + 1));
-		if (!args) {
-			ft_putstr_fd(RED "Fatal error\n" RESET, 2);
-			return ERROR;
-		}
-		int		j = 0;
-		for (int i = 1; i < ac; i++) {
-			if (av[i][0] != '-') {
-				args[j++] = av[i];
+	if (directories_count + files_count == 0)
+		handle_directories(pwd, ".", options, 0);
+	else {
+		char	**directories = NULL;
+		if (directories_count > 0) {
+			directories = malloc(sizeof(char *) * (directories_count + 1));
+			if (!directories) {
+				ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+				return ERROR;
 			}
 		}
-		args[j] = NULL;
-		for (int i = 0; i < count; i++) {
-			if (args[i][0] == '/')
-				handle_directories(args[i], ".", options, count > 1);
-			else
-				handle_directories(pwd, args[i], options, count > 1);
+		char	**files = NULL;
+		if (files_count > 0) {
+			files = malloc(sizeof(char *) * (files_count + 1));
+			if (!files) {
+				ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+				if (directories_count > 0)
+					free(directories);
+				return ERROR;
+			}
 		}
-		free(args);
-	} else {
-		handle_directories(pwd, ".", options, 0);
+		int		j = 0, k = 0;
+		for (int i = 1; i < ac; i++) {
+			if (av[i][0] != '-') {
+				int status = is_dir(av[i]);
+				if (status == TRUE && directories_count > 0)
+					directories[j++] = av[i];
+				else if (status == FALSE && files_count > 0)
+					files[k++] = av[i];
+				else if (status == ERROR) {
+					if (directories_count > 0)
+						free(directories);
+					if (files_count > 0)
+						free(files);
+					return ERROR;
+				}
+			}
+		}
+		if (files_count > 0) {
+			files[k] = NULL;
+			handle_files(pwd, files, files_count, options);
+			free(files);
+		}
+		if (directories_count > 0) {
+			directories[j] = NULL;
+			for (int i = 0; i < directories_count; i++) {
+				if (directories[i][0] == '/')
+					handle_directories(directories[i], ".", options, directories_count > 1);
+				else
+					handle_directories(pwd, directories[i], options, directories_count > 1);
+			}
+			free(directories);
+		}
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 13:49:05 by romain            #+#    #+#             */
-/*   Updated: 2026/01/10 14:27:50 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 12:05:23 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static struct stat	**malloc_stat_list(t_dir_info *dir_info, unsigned char option
 
 	count = 0;
 	for (int i = 0; i < dir_info->size; i++) {
-		if (dir_info->content[i][0] != '.' || ALL_OPT(options))
+		if (!dir_info->is_dir || dir_info->content[i][0] != '.' || ALL_OPT(options))
 			count++;
 	}
 	st = malloc(sizeof(struct stat *) * (count + 1));
@@ -82,7 +82,7 @@ static char	**malloc_content_list(t_dir_info *dir_info, unsigned char options)
 	char	**content_list;
 
 	for (int i = 0; i < dir_info->size; i++)
-		if (dir_info->content[i][0] != '.' || ALL_OPT(options))
+		if (!dir_info->is_dir || dir_info->content[i][0] != '.' || ALL_OPT(options))
 			count++;
 	content_list = malloc(sizeof(char *) * (count + 1));
 	if (!content_list) {
@@ -305,7 +305,7 @@ char	**get_content_list(t_dir_info *dir_info, char *path, unsigned char options)
 	int	j = 0;
 	for  (int i = 0; i < dir_info->size; i++)
 	{
-		if (dir_info->content[i][0] != '.' || ALL_OPT(options))
+		if (!dir_info->is_dir || dir_info->content[i][0] != '.' || ALL_OPT(options))
 		{
 			char	*abs_path;
 			if (dir_info->is_dir)
@@ -320,13 +320,13 @@ char	**get_content_list(t_dir_info *dir_info, char *path, unsigned char options)
 				return NULL;
 			}
 			names[j] = dir_info->content[i];
-			if (stat(abs_path, st[j]) == -1)
-				ft_printf(CYAN "%s\n" RESET, abs_path);
+			stat(abs_path, st[j]);
 			total_blocks += st[j++]->st_blocks;
 			free(abs_path);
 		}
 	}
-	ft_printf("total %i\n", total_blocks >> 1);
+	if (dir_info->is_dir)
+		ft_printf("total %i\n", total_blocks >> 1);
 	if (set_permissions(content_list, st) == ERROR) {
 		for (int i = 0; st[i]; i++)
 			free(st[i]);
