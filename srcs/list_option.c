@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 13:49:05 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 18:09:09 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 19:14:48 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,13 +90,13 @@ static int	set_permissions(char **content_list, struct stat **st)
 		permission[0] = get_type(st[i]->st_mode);
 		permission[1] = st[i]->st_mode & S_IRUSR ? 'r' : '-';
 		permission[2] = st[i]->st_mode & S_IWUSR ? 'w' : '-';
-		permission[3] = st[i]->st_mode & S_IXUSR ? 'x' : '-';
+		permission[3] = st[i]->st_mode & S_IXUSR ? 'x' : st[i]->st_mode & S_ISUID ? 'S' : '-';
 		permission[4] = st[i]->st_mode & S_IRGRP ? 'r' : '-';
 		permission[5] = st[i]->st_mode & S_IWGRP ? 'w' : '-';
-		permission[6] = st[i]->st_mode & S_IXGRP ? 'x' : '-';
+		permission[6] = st[i]->st_mode & S_IXGRP ? 'x' : st[i]->st_mode & S_ISGID ? 'S' : '-';
 		permission[7] = st[i]->st_mode & S_IROTH ? 'r' : '-';
 		permission[8] = st[i]->st_mode & S_IWOTH ? 'w' : '-';
-		permission[9] = st[i]->st_mode & S_IXOTH ? 'x' : '-';
+		permission[9] = st[i]->st_mode & S_IXOTH ? 'x' : st[i]->st_mode & S_ISVTX ? 'T' : '-';
 		permission[10] = ' ';
 		permission[11] = '\0';
 		content_list[i] = permission;

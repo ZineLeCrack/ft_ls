@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 14:59:59 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 18:30:25 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 19:14:43 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@
 # define NO_PERM	3
 # define TRUE		4
 # define FALSE		5
+
+# define S_ISVTX	__S_ISVTX
 
 # define       ALL_OPT(opt) opt >> 0 & 1U
 # define      LIST_OPT(opt) opt >> 1 & 1U
