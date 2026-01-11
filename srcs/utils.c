@@ -6,11 +6,26 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 10:18:09 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 12:33:10 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 13:59:33 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+char	*get_next_path(char *path, char *dir)
+{
+	char	*next_path;
+
+	next_path = malloc(ft_strlen(path) + ft_strlen(dir) + 2);
+	if (!next_path) {
+		ft_putstr_fd(RED "Fatal error\n" RESET, 2);
+		return NULL;
+	}
+	ft_strlcpy(next_path, path, ft_strlen(path) + 1);
+	next_path[ft_strlen(path)] = '/';
+	ft_strlcpy(next_path + ft_strlen(path) + 1, dir, ft_strlen(dir) + 1);
+	return next_path;
+}
 
 int	ft_strcasecmp(const char *s1, const char *s2)
 {

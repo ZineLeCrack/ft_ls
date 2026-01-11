@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 18:03:36 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 12:33:05 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 12:39:10 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static int	get_content(char *path, char ***content)
 	return 0;
 }
 
-t_dir_info	*get_dir_info(char *abs_path, unsigned char options)
+t_dir_info	*get_dir_info(char *path, unsigned char options)
 {
 	char	**content;
 
@@ -80,12 +80,12 @@ t_dir_info	*get_dir_info(char *abs_path, unsigned char options)
 		ft_putstr_fd(RED "Fatal error\n" RESET, 2);
 		return NULL;
 	}
-	dir_info->size = malloc_content(abs_path, &content);
+	dir_info->size = malloc_content(path, &content);
 	if (dir_info->size == -1) {
 		free(dir_info);
 		return NULL;
 	}
-	if  (get_content(abs_path, &content) == -1) {
+	if  (get_content(path, &content) == -1) {
 		free(content);
 		free(dir_info);
 		return NULL;

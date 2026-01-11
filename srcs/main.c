@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 14:58:50 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 11:58:24 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 12:48:42 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,15 +41,7 @@ static unsigned char	add_option(unsigned char options, char option)
 	}
 }
 
-static char	*find_current_directory(char **env)
-{
-	for (int i = 0; env[i]; i++)
-		if (!ft_strncmp(env[i], "PWD=", 4))
-			return (env[i] + 4);
-	return NULL;
-}
-
-int	main(int ac, char **av, char **env)
+int	main(int ac, char **av)
 {
 	unsigned char	options = 0;
 	int				directories_count = 0;
@@ -74,13 +66,8 @@ int	main(int ac, char **av, char **env)
 			}
 		}
 	}
-	char	*pwd = find_current_directory(env);
-	if (!pwd) {
-		ft_putstr_fd(RED "Error: can't find PWD in env\n" RESET, 2);
-		return ERROR;
-	}
 	if (directories_count + files_count == 0)
-		handle_directories(pwd, ".", options, 0);
+		handle_directories(".", options, 0);
 	else {
 		char	**directories = NULL;
 		if (directories_count > 0) {
@@ -119,16 +106,13 @@ int	main(int ac, char **av, char **env)
 		}
 		if (files_count > 0) {
 			files[k] = NULL;
-			handle_files(pwd, files, files_count, options);
+			handle_files(files, files_count, options);
 			free(files);
 		}
 		if (directories_count > 0) {
 			directories[j] = NULL;
 			for (int i = 0; i < directories_count; i++) {
-				if (directories[i][0] == '/')
-					handle_directories(directories[i], ".", options, directories_count > 1);
-				else
-					handle_directories(pwd, directories[i], options, directories_count > 1);
+				handle_directories(directories[i], options, directories_count > 1);
 			}
 			free(directories);
 		}

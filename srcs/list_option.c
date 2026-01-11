@@ -6,26 +6,11 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 13:49:05 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 12:31:44 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 14:02:39 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-
-static char	*get_abs_path(char *path, char *name)
-{
-	char		*abs_path;
-
-	abs_path = malloc(ft_strlen(path) + ft_strlen(name) + 2);
-	if (!abs_path) {
-		ft_putstr_fd(RED "Fatal error\n" RESET, 2);
-		return NULL;
-	}
-	ft_strlcpy(abs_path, path, ft_strlen(path) + 1);
-	abs_path[ft_strlen(path)] = '/';
-	ft_strlcpy(abs_path + ft_strlen(path) + 1, name, ft_strlen(name) + 1);
-	return abs_path;
-}
 
 static char	get_type(mode_t mode)
 {
@@ -303,23 +288,20 @@ char	**get_content_list(t_dir_info *dir_info, char *path, unsigned char options)
 	blkcnt_t	total_blocks = 0;
 	content_list[size] = NULL;
 	int	j = 0;
-	for  (int i = 0; i < dir_info->size; i++)
-	{
-		if (!dir_info->is_dir || dir_info->content[i][0] != '.' || ALL_OPT(options))
-		{
-			char	*abs_path;
-			abs_path = get_abs_path(path, dir_info->content[i]);
-			if (!abs_path) {
+	for  (int i = 0; i < dir_info->size; i++) {
+		if (!dir_info->is_dir || dir_info->content[i][0] != '.' || ALL_OPT(options)) {
+			names[j] = dir_info->content[i];
+			char	*next_path = get_next_path(path, dir_info->content[i]);
+			if (!next_path) {
 				for (int i = 0; st[i]; i++)
 					free(st[i]);
 				free(st);
 				free(content_list);
 				return NULL;
 			}
-			names[j] = dir_info->content[i];
-			stat(abs_path, st[j]);
+			stat(next_path, st[j]);
 			total_blocks += st[j++]->st_blocks;
-			free(abs_path);
+			free(next_path);
 		}
 	}
 	if (dir_info->is_dir)
