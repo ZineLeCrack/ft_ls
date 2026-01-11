@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 13:49:05 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 14:02:39 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 14:06:34 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -314,12 +314,12 @@ char	**get_content_list(t_dir_info *dir_info, char *path, unsigned char options)
 		return NULL;
 	}
 	if (
-		set_nlink(content_list, st, size) == ERROR ||
-		set_user_name(content_list, st, size) == ERROR ||
-		set_group_name(content_list, st, size) == ERROR ||
-		set_size(content_list, st, size) == ERROR ||
-		set_time(content_list, st, size) == ERROR ||
-		set_name(content_list, names, size) == ERROR
+		set_nlink     (content_list,    st, size)	== ERROR ||
+		set_user_name (content_list,    st, size)	== ERROR ||
+		set_group_name(content_list,    st, size)	== ERROR ||
+		set_size      (content_list,    st, size)	== ERROR ||
+		set_time      (content_list,    st, size)	== ERROR ||
+		set_name      (content_list, names, size)	== ERROR
 	) {
 		for (int i = 0; st[i]; i++)
 			free(st[i]);
