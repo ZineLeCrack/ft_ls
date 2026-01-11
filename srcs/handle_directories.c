@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 09:40:02 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 12:20:53 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 12:33:48 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,7 @@ void	handle_files(char *pwd, char **files, int size, unsigned char options)
 		return ;
 	}
 
+	sort_content(size, &files);
 	if (REVERSE_OPT(options)) {
 		reverse_content(size, &files);
 	}

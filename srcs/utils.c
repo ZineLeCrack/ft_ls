@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 10:18:09 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 12:25:33 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 12:33:10 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,21 @@ int	is_dir(char *path)
 	int	is_dir = S_ISDIR(st->st_mode);
 	free(st);
 	return is_dir ? TRUE : FALSE;
+}
+
+void	sort_content(int size, char ***content)
+{
+	char	*tmp;
+
+	for (int i = 0; i < size - 1; i++) {
+		for (int j = i + 1; j < size; j++) {
+			if (ft_strcasecmp((*content)[i], (*content)[j]) > 0) {
+				tmp = (*content)[i];
+				(*content)[i] = (*content)[j];
+				(*content)[j] = tmp;
+			}
+		}
+	}
 }
 
 void	reverse_content(int size, char ***content)

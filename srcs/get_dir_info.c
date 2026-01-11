@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 18:03:36 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 12:21:05 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/11 12:33:05 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,21 +69,6 @@ static int	get_content(char *path, char ***content)
 	(*content)[count] = NULL;
 	closedir(dir);
 	return 0;
-}
-
-static void	sort_content(int size, char ***content)
-{
-	char	*tmp;
-
-	for (int i = 0; i < size - 1; i++) {
-		for (int j = i + 1; j < size; j++) {
-			if (ft_strcasecmp((*content)[i], (*content)[j]) > 0) {
-				tmp = (*content)[i];
-				(*content)[i] = (*content)[j];
-				(*content)[j] = tmp;
-			}
-		}
-	}
 }
 
 t_dir_info	*get_dir_info(char *abs_path, unsigned char options)
