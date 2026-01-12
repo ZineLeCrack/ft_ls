@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
+/*   By: rlebaill <rlebaill@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 10:18:09 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 18:25:13 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/12 07:47:26 by rlebaill         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void	sort_content(int size, char ***content, char *path, unsigned char options)
 			ft_putstr_fd(RED "Fatal error\n" RESET, 2);
 			return ;
 		}
-		time_t	*times = malloc(sizeof(time_t) * size);
+		unsigned long	*times = malloc(sizeof(time_t) * size);
 		if (!times) {
 			ft_putstr_fd(RED "Fatal error\n" RESET, 2);
 			free(st);
@@ -94,8 +94,8 @@ void	sort_content(int size, char ***content, char *path, unsigned char options)
 				free(st);
 				return ;
 			}
-			stat(next_path, st);
-			times[i] = st->st_mtime;
+			lstat(next_path, st);
+			times[i] = (unsigned long)st->st_mtim.tv_sec * 1000000000UL + (unsigned long)st->st_mtim.tv_nsec;
 			free(next_path);
 		}
 		for (int i = 0; i < size - 1; i++) {

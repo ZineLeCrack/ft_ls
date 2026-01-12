@@ -1,5 +1,6 @@
 ft_ls
 objs/
 *.a
+*.txt
 en.subject.pdf
 *.sh
