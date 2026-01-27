@@ -5,7 +5,7 @@ Ce projet reproduit le comportement de `ls` avec un sous-ensemble d’options.
 
 ---
 
-## 📌 Fonctionnalités
+## Fonctionnalités
 
 `ft_ls` gère les options suivantes :
 
@@ -18,7 +18,7 @@ Ce projet reproduit le comportement de `ls` avec un sous-ensemble d’options.
 
 ---
 
-## 🚀 Compilation
+## Compilation
 
 ```bash
 make
