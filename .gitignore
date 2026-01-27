@@ -1,5 +1,6 @@
 ft_ls
 objs/
+.vscode/
 *.a
 *.txt
 en.subject.pdf

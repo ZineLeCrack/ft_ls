@@ -8,7 +8,7 @@ OBJDIR = objs
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-SRCS = get_dir_info.c handle_directories.c print_content.c list_option.c utils.c main.c
+SRCS = help_message.c get_dir_info.c handle_directories.c print_content.c list_option.c utils.c main.c
 SRCS := $(addprefix $(SRCDIR)/, $(SRCS))
 
 OBJS = $(SRCS:%.c=$(OBJDIR)/%.o)

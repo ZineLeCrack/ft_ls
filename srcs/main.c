@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/07 14:58:50 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 18:05:01 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/27 12:08:57 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@ int	main(int ac, char **av)
 
 	for (int i = 1; i < ac; i++) {
 		if (av[i][0] == '-') {
+			if (ft_strcmp(av[i], "--help") == 0)
+				display_help_message();
 			if (!av[i][1]) {
 				invalid_argument_message(127);
 				return 2;
