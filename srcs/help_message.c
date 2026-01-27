@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 12:09:13 by romain            #+#    #+#             */
-/*   Updated: 2026/01/27 12:17:19 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/27 12:20:26 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ Sort entries alphabetically if -t is not specified.\n\
   -r                         reverse order while sorting\n\
   -R                         list subdirectories recursively\n\
   -t                         sort by time, newest first\n\
+      --help        display this help and exit\n\
 ");
 	exit(0);
 }
