@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rlebaill <rlebaill@student.42.fr>          +#+  +:+       +#+        */
+/*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 10:18:09 by romain            #+#    #+#             */
-/*   Updated: 2026/01/12 07:47:26 by rlebaill         ###   ########.fr       */
+/*   Updated: 2026/01/28 17:30:53 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ int	is_dir(char *path)
 		ft_putstr_fd(RED "Fatal error\n" RESET, 2);
 		return ERROR;
 	}
-	if (stat(path, st) == -1) {
+	if (lstat(path, st) == -1) {
 		free(st);
 		if (errno == ENOENT)
 			return NSFOD;

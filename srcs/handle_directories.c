@@ -6,7 +6,7 @@
 /*   By: romain <romain@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/08 09:40:02 by romain            #+#    #+#             */
-/*   Updated: 2026/01/11 18:07:22 by romain           ###   ########.fr       */
+/*   Updated: 2026/01/28 17:30:49 by romain           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static int	launch_recursion(t_dir_info *dir_info, char *path, unsigned char opti
 				free(st);
 				return ERROR;
 			}
-			stat(next_path, st);
+			lstat(next_path, st);
 			if (S_ISDIR(st->st_mode)
 			&& ft_strcmp(dir_info->content[i], ".")
 			&& ft_strcmp(dir_info->content[i], ".."))
